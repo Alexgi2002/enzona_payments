@@ -1,7 +1,7 @@
 name: enzona_payments
 description: "Paquete para gestionar sus pagos a través de la pasarela de pagos Enzona."
 version: 1.0.0
-homepage:
+homepage: https://github.com/Alexgi2002/enzona_payments
 
 environment:
   sdk: '>=3.2.0 <4.0.0'

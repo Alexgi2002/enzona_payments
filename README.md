@@ -1,39 +1,55 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+Documentación API Enzona (Java)
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
+- Crear instancia de Enzona, y pasarle el consumer key y consumer secret del comercio:
+Enzona enzona = new Enzona(consumer_key, consumer_secret );
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
+- Crear una reservación de pago para hacer que el usuario pague usando el siguiente método:
+	public Payment createPayment(PaymentRequest paymentRequest);
+	Que espera un objeto de tipo PaymentRequest con los siguientes campos:
+		private String merchant_uuid; → id del mercado.
+    		private String description; → descripción de la transacción.
+    		private String return_url; → url de retorno cuando el user efectue el 		pago.
+		
+		private String cancel_url; → url de retorno cuando el user cancele el 		pago.		
+		
+		private String currency; → enum CUP o CUC.
+		private ArrayList<Product> items; → lista de productos a pagar por el 		user.
+			Product(
+				double price; → precio del producto
+    				String name; → nombre del producto
+    				String description; → descripción del producto
+			)
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+- Luego de crear el pago recibes un objeto Payment con los siguientes campos:
+	String transaction_uuid; → campo importante que define el id de la 	transacción.
+    	
+	int status_code;
+    	Currency currency; → enum CUP o CUC
+    	String status_denom; → Tipos de estados que pueden ser según la API
+		- Pendiente
+    		- Fallida
+    		- Confirmada
+    		- Aceptada
+    	
+	String description;
+    	String merchant_op_id; → id de la operación (sin uso)
+    	double price_total; → precio total a pagar
+    	ArrayList<Product> items; → lista de productos
+    	ArrayList<Link> links; → lista de links para procedimientos
 
-## Features
+- Deberás usar el link con valor “rel” = “confirm”, que normalmente es el primero con aspecto similar a este:
+	https://www.enzona.net/checkout/01b5aebd41d1ec436ca92bb707fe8d009e/login
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- Esto redirige al usuario a la plataforma de Enzona a proceder al pago.
+- Una vez en esta dirección si el usuario cancela el pago la plataforma redirige hacia la url que se haya puesto en “cancel_url”, de lo contrario si el usuario realiza bien el pago redirige a la url con el valor en “return_url” (ya queda por parte de la app mostrar un webview y capturar los redirect o mostrar una url válida en caso de disponer de ella). 
+- Luego puede hacer uso de el método
+	public Payment getPayment(String transaction_uuid)
+	*para comprobar el estado de el pago, devolviendo el objeto Payment antes descrito.
 
-## Getting started
+- Luego de que se realice el pago debe usar el método
+    public boolean completePayment(String transaction_uuid)
+	*para completar y cerrar la transacción
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
-```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+- Puede hacer uso del método cancelPayment para cerrar cualquier transacción que el usuario decida no hacer y no haya cancelado desde la plataforma
+    public boolean cancelPayment(String transaction_uuid)
+    
