@@ -13,7 +13,7 @@ void main(){
   test("Test Enzona lib", () async {
     try {
              //Create an instance of an Enzona object by passing the consumer_key and consumer_secret of your merchant
-             final Enzona e = Enzona(MerchantInfo("81go6n9Vz1gcSL2nK5mfZxJzDRwa", "MLZucMGr3z9k5kqp49jvwJCrWU4a"));
+             final Enzona e = Enzona(MerchantInfo("consumer_key", "consumer_secret"));
              
              //Create the list of products to send
             List<Product> items = [];
@@ -22,7 +22,7 @@ void main(){
              
              //Create a new payment with the createPayment method
              Payment payment = await e.createPayment(PaymentRequest(
-                     "2a5d8dfd49794387b408d2168a461da5",
+                     "merchant_uuid",
                      "000000000001",
                      "description",
                      Details(0, 0, 0),
